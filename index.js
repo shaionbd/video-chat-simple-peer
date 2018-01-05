@@ -5,7 +5,7 @@ getUserMedia({ video: true, audio: true }, function (err, stream) {
 
 	var Peer = require('simple-peer');
 	var peer = new Peer({
-	    initiator: location.hash === '#caller',
+	    initiator: location.hash === '#init',
 	    trickle: false,
     	stream: stream
 	  });
@@ -15,23 +15,29 @@ getUserMedia({ video: true, audio: true }, function (err, stream) {
 	});
 
 	document.getElementById('connect').addEventListener('click', function () {
-		var otherId = JSON.parse(document.getElementById('otherId').value)
-		peer.signal(otherId)
+		var otherId = JSON.parse(document.getElementById('otherId').value);
+		peer.signal(otherId);
 	})
 
 	document.getElementById('send').addEventListener('click', function () {
-		var yourMessage = document.getElementById('yourMessage').value
-		peer.send(yourMessage)
+		var yourMessage = document.getElementById('yourMessage').value;
+		document.getElementById('yourMessage').value = "";
+		document.getElementById('messages').textContent += yourMessage + '\n';
+		peer.send(yourMessage);
 	})
+
 
 	peer.on('data', function (data) {
-		document.getElementById('messages').textContent += data + '\n'
+		document.getElementById('messages').textContent += data + '\n';
+		document.getElementById('messages-2').textContent += data + '\n';
 	})
 	peer.on('stream', function (stream) {
-    var video = document.createElement('video')
-    document.body.appendChild(video)
+	    var video = document.createElement('video');
+	    video.style.height = 300 + 'px';
+	    video.style.width = 321 + 'px';
+	    document.getElementById('video-show').appendChild(video);
 
-    video.src = window.URL.createObjectURL(stream)
-    video.play()
-  })
+	    video.src = window.URL.createObjectURL(stream)
+	    video.play();
+  	});
 });
